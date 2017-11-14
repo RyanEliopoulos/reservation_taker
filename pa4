@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#name=`zenity --entry --text="please enter your name" --title="please enter your name"`
+
+
+test=`zenity --entry --title="Traveler Name" --text="What is the traveler's name?"`	#Prompts user to enter a name.  Can play with options
+echo $test
+
+departure_date=`zenity --calendar --text="What is the departure date?"`
+
+echo $departure_date
+
+return_date=`zenity --calendar --text="What is the return date?"`
+
+echo $return_date
+
+

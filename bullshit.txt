@@ -1,0 +1,3 @@
+susie|portland|Seattle|11-9-2017|11-9-2017|3
+roy|Phoenix|Orlando|11-10-2017|11-10-2017|1
+bob|Helena|Las Vegas|12-1-2017|12-15-2017|9

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+k=`sed -n '/cock/p' bullshit.txt`
+
+if [[ $k == '' ]]
+then	
+	echo "Fuck"
+fi
