@@ -3,16 +3,17 @@
 
 # Removes the carriage return inserted by windows
 remove_carriage (){
-	echo `echo $1 | sed 's/\r//g'`
+	echo `echo $1 | sed 's/\r//'` # Probably can remove outside echo and the backquotes
 }
-	
+
+# Removes the slashes and rearranges the dates to be in yymmdd format
 format_date (){
 	#formatted_date=`echo $1 | sed "s/\(.*\)\/\(.*\)\/\(.*\)/\1\2\3/g"`
 	#echo $formatted_date | od -c
 	echo $1 | sed "s/\(.*\)\/\(.*\)\/\(.*\)/\3\1\2/g"
 
 }
-
+# Evaluates the formatted departure and arrival dates for validity - arrival date cannot be before the departure date, and the departure date must be after the current date
 screen_dates (){
 	#sets variable today to current date in the same format as formatted departure and return dates
 	today=`date +%y%m%d`
@@ -42,6 +43,18 @@ formatted_departure=`format_date $departure_date`
 formatted_return=`format_date $return_date`
 
 screen_dates
+departure_city=`zenity --list --title="Select your departure city" --column="City" \
+	"Portland" \
+	"Seattle" \
+	"Los Angeles" \
+	"St. Paul" \
+	"Miami" \
+	"Norfolk" \
+	"New york" `
+departure_city=`remove_carriage "$departure_city"`
+
+
+echo $departure_city | cat >> test_file.txt
 
 
 # use sed -n "/^$variable/p" to find out of an entry exists for that person. If so, use grep -v $variable > to write new file without that entry, then echo $variable >> reservations.txt to append the new scheduled trip.
