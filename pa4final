@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Removes the carriage return inserted by windows
+remove_carriage (){
+	echo `echo $1 | sed 's/\r//'` # Probably can remove outside echo and the backquotes
+}
+
+
+
+passenger_name=`zenity --entry --title="Traveler Name" --text="What is the traveler's name?"`	#Prompts user to enter a name.  Can play with options
+passenger_name=`remove_carriage "$passenger_name"`
+
+
+echo $passenger_name | od -c
+if [[ $passenger_name == '' ]]
+then
+	echo "Empty string"
+else
+	echo $passenger_name
+fi
