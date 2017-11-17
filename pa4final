@@ -120,7 +120,6 @@ dates_first_pass(){
 
 	departure_date=''
 	return_date=''
-	echo "inside first pass"	
 	#Continues until neither of the travel dates are empty strings
 	while [[ $departure_date == '' || $return_date == '' ]]
 	do	
@@ -225,6 +224,36 @@ intake_locations(){
 	done
 }
 
+#Prints the data entered so far at the terminal and prompts the user to verify the accuracy of the informatin. User has the option to move forward with the reservation or cancel the process
+print_summary(){
+	
+	echo "Reservation name: $passenger_name"
+	echo "Departure date: $departure_date"
+	echo "Return date: $return_date"
+	echo "Departure city: $departure_city"
+	echo "Destination city: $destination_city"
+	echo "Number of bags: $bags"
+	echo
+	echo "If the above information is correct, we will make your reseveation."
+	echo "If the information is incorrect, the session will exit and you can try again"
+	echo
+	echo "Is the above information correct? yes = 'Y' no = 'N'"
+
+	#Loop that only terminates when the user enters Y or N	
+	while [[ 1 -eq 1 ]]
+	do		
+		read -n 1 var
+	
+		if [[ $var == 'N' ]]
+		then
+			exit 1
+		elif [[ $var == 'Y' ]]
+		then	
+			return
+		fi
+	done
+
+}
 #program begins
 #Initializes variables
 passenger_name=''
@@ -236,8 +265,6 @@ return_date=''
 #intake_passenger_name
 #intake_travel_dates
 #intake_bags
-
+#intake_locations
+#print_summary
 #In progress
-intake_locations
-echo $departure_city	
-echo $destination_city
