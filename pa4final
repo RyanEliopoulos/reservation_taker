@@ -19,27 +19,31 @@ screen_dates (){
 
 	#sets variable today to current date in the same format as formatted departure and return dates
 	today=`date +%y%m%d`
-	echo "Departure date is $formatted_departure"
-	echo "Arrival date is $formatted_return"
-	echo "today is $today"
+	#echo "Departure date is $formatted_departure"
+	#echo "Arrival date is $formatted_return"
+	#echo "today is $today"
 
 	#Checks to see that the departure date is not after the return date && that the departure date is not today or earlier
-	if [[ $formatted_departure -le $formatted_return && $formatted_departure -gt $today ]]
+	if [[ $formatted_departure -le $formatted_return ]] && [[ $formatted_departure -gt $today ]]
 	then
-		return 0
+		#return 0
+		echo 0
 	fi
 	
-	#Checks if the departing date is today or earlier (not allowed). Returns -1 if so.
+	#Checks if the departing date is today or earlier (not allowed). Echoes -1 if so.
 	if [[ $formatted_departure -le $today ]]
 	then
-		return -1
+		#return -1
+		echo -1
 	fi
 	
-	#Checks if the return date is earlier than the departure date (not allowed). Returns 1 if so.
+	#Checks if the return date is earlier than the departure date (not allowed). Echoes 1 if so.
 	if [[ $formatted_return -lt $formatted_departure ]]
 	then
-		return 1
+		#return 1
+		echo 1
 	fi
+	
 }
 
 
@@ -77,27 +81,38 @@ intake_passenger_name(){
 }	
 
 intake_travel_dates(){
+
+		
+	#while [[ 1 -eq 1 ]]
+	#jdo
+		#Intakes travel dates from user	
+		dates_first_pass	
+
+		#Formats dates for comparison
+		formatted_departure=`format_date $departure_date`
+		formatted_return=`format_date $return_date`
+
+		#Assigns the "return" values from screen_dates: 0 if the dates are valid, 1 if the arrival date is before departure, and -1 if the departure date is before today
+		screen_value=$(screen_dates)
+		if [[ $screen_value -eq 0 ]]
+		then
+			echo "Dates are good.. returning"
+		return
+		fi
+
+		if [[ $screen_value -eq 1 ]]
+		then
+			echo "you can't return before you leave! Please try again"
+		fi
 	
-	departure_date=`zenity --calendar --text="What is the departure date?"`
-	return_date=`zenity --calendar --text="What is the return date?"`
-
-	echo $departure_date | od -c
-	echo $return_date | od -c
-	#Removes carriage return
-	departure_date=`remove_carriage $departure_date`
-	return_date=`remove_carriage $return_date`
-
-
-	#Formats dates for comparison
-	formatted_departure=`format_date $departure_date`
-	formatted_return=`format_date $return_date`
-
-#	screen_dates
-
-	
+		if [[ $screen_value -eq -1 ]]
+		then
+			echo "You can't leave in the past! Try again.."
+		fi
+	#done
 
 }
-#This fnx checks if the user pressed "cancel" on either of the flight date selection screens. If it detects the user did so, the user will be asked to either try again or quit the session
+#This fnx checks if the user pressed "cancel" on either of the flight date selection screens. If it detects the user did so, the user will be asked to either try again or quit the session. Subroutine of intake_travel_dates()
 dates_first_pass(){
 
 	#Continues until neither of the travel dates are empty strings
@@ -143,5 +158,4 @@ return_date=''
 #dates_first_pass
 
 #In progress
-#intake_travel_dates
-dates_first_pass
+intake_travel_dates
