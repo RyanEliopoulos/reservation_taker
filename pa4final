@@ -28,6 +28,7 @@ screen_dates (){
 	then
 		#return 0
 		echo 0
+		return
 	fi
 	
 	#Checks if the departing date is today or earlier (not allowed). Echoes -1 if so.
@@ -35,6 +36,7 @@ screen_dates (){
 	then
 		#return -1
 		echo -1
+		return
 	fi
 	
 	#Checks if the return date is earlier than the departure date (not allowed). Echoes 1 if so.
@@ -42,6 +44,7 @@ screen_dates (){
 	then
 		#return 1
 		echo 1
+		return
 	fi
 	
 }
@@ -82,39 +85,41 @@ intake_passenger_name(){
 
 intake_travel_dates(){
 
-		
-	#while [[ 1 -eq 1 ]]
-	#jdo
+	while [[ 1 -eq 1 ]]
+	do
 		#Intakes travel dates from user	
 		dates_first_pass	
-
+		
 		#Formats dates for comparison
 		formatted_departure=`format_date $departure_date`
 		formatted_return=`format_date $return_date`
 
 		#Assigns the "return" values from screen_dates: 0 if the dates are valid, 1 if the arrival date is before departure, and -1 if the departure date is before today
 		screen_value=$(screen_dates)
+		echo $screen_value
 		if [[ $screen_value -eq 0 ]]
 		then
-			echo "Dates are good.. returning"
-		return
+			return
 		fi
 
 		if [[ $screen_value -eq 1 ]]
 		then
-			echo "you can't return before you leave! Please try again"
+			zenity --warning --text="You can't come back before you leave! Try again."
 		fi
 	
 		if [[ $screen_value -eq -1 ]]
 		then
-			echo "You can't leave in the past! Try again.."
+			zenity --warning --text="Time traveling is strictly prohibited. Please try again."
 		fi
-	#done
+	done
 
 }
 #This fnx checks if the user pressed "cancel" on either of the flight date selection screens. If it detects the user did so, the user will be asked to either try again or quit the session. Subroutine of intake_travel_dates()
 dates_first_pass(){
 
+	departure_date=''
+	return_date=''
+	echo "inside first pass"	
 	#Continues until neither of the travel dates are empty strings
 	while [[ $departure_date == '' || $return_date == '' ]]
 	do	
