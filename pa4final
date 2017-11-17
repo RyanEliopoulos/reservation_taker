@@ -13,6 +13,7 @@ format_date (){
 
 }
 
+
 # Evaluates the formatted departure and arrival dates for validity - arrival date cannot be before the departure date, and the departure date must be after the current date
 screen_dates (){
 
@@ -22,17 +23,29 @@ screen_dates (){
 	echo "Arrival date is $formatted_return"
 	echo "today is $today"
 
+	#Checks to see that the departure date is not after the return date && that the departure date is not today or earlier
 	if [[ $formatted_departure -le $formatted_return && $formatted_departure -gt $today ]]
 	then
-		echo "valid travel dates"
-	else
-		echo "invalid travel dates"
-	fi	
+		return 0
+	fi
+	
+	#Checks if the departing date is today or earlier (not allowed). Returns -1 if so.
+	if [[ $formatted_departure -le $today ]]
+	then
+		return -1
+	fi
+	
+	#Checks if the return date is earlier than the departure date (not allowed). Returns 1 if so.
+	if [[ $formatted_return -lt $formatted_departure ]]
+	then
+		return 1
+	fi
 }
 
 
 #Prompts user to enter the name of the passenger. If the user enters a non-empty string they will be asked if they want to reenter a name or quit the session
 intake_passenger_name(){
+	
 	passenger_name=''
 
 	while [[ $passenger_name == '' ]]
@@ -69,6 +82,8 @@ intake_travel_dates(){
 	departure_date=`zenity --calendar --text="What is the departure date?"`
 	return_date=`zenity --calendar --text="What is the return date?"`
 
+	echo $departure_date | od -c
+	echo $return_date | od -c
 	#Removes carriage return
 	departure_date=`remove_carriage $departure_date`
 	return_date=`remove_carriage $return_date`
@@ -78,13 +93,54 @@ intake_travel_dates(){
 	formatted_departure=`format_date $departure_date`
 	formatted_return=`format_date $return_date`
 
+#	screen_dates
 
-
-
+	
 
 }
+#This fnx checks if the user pressed "cancel" on either of the flight date selection screens. If it detects the user did so, the user will be asked to either try again or quit the session
+dates_first_pass(){
 
-#Program begins
-intake_passenger_name
+	#Continues until neither of the travel dates are empty strings
+	while [[ $departure_date == '' || $return_date == '' ]]
+	do	
+		departure_date=`zenity --calendar --text="What is the departure date?"`
+		return_date=`zenity --calendar --text="What is the return date?"`
+
+		#Removes carriage return
+		departure_date=`remove_carriage $departure_date`
+		return_date=`remove_carriage $return_date`
+
+		#Checks if the user pressed "cancel" on one of the date selection screens. Offers chance to try again or quit session
+		if [[ $departure_date == '' || $return_date == '' ]]
+		then
+			#Asks user if they mean to quit the session or retry entering valid dates	
+			zenity --question --text="Invalid date selection..try again or quit?" \
+				--ok-label="Try again" \
+				--cancel-label="Quit"
+		
+			#interprets user input to previous question. Loop continues if "Try again", exits is "Quit"
+			if [[ $? -eq 0 ]]
+			then
+				echo "Ok, trying again"
+			else
+				echo "Ok, canceling.."
+				exit -1
+			fi
+
+		fi
+
+	done
+}
+#program begins
+
+#Initializes the date strings. 
+departure_date=''
+return_date=''
 
 
+# Below is working
+#intake_passenger_name
+
+#intake_travel_dates
+dates_first_pass
