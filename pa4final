@@ -254,6 +254,34 @@ print_summary(){
 	done
 
 }
+
+file_reservation(){
+
+	#Separates the variable values in file
+	sep="|"
+	
+	#The variable holding the formatted passenger information
+	super_var=$passenger_name$sep$departure_city$sep$destination_city$sep$departure_date$sep$return_date$sep$bags
+	
+	#Check if the passenger already has a reservation
+	presence=`grep ^"$passenger_name" reservations.txt`
+	
+	#Appends reservation to file if there is no previous reservation
+	# Otherwise, deletes previous reservation and appends new one.
+	if [[ $presence == '' ]]
+	then
+		echo $super_var >> reservations.txt #Prints to file
+	else
+		sed -i "s/^$passenger_name.*//gI" reservations.txt  #Removes old reservation. Case insensitive
+		sed -i '/^\s*$/d' reservations.txt #Removes empty lines
+		echo $super_var >> reservations.txt
+	fi
+
+
+
+}
+
+
 #program begins
 #Initializes variables
 passenger_name=''
@@ -262,9 +290,12 @@ return_date=''
 
 
 # Below is working
-#intake_passenger_name
-#intake_travel_dates
-#intake_bags
-#intake_locations
-#print_summary
+intake_passenger_name
+intake_travel_dates
+intake_bags
+intake_locations
+print_summary
 #In progress
+file_reservation
+
+
