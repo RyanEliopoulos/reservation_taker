@@ -159,7 +159,7 @@ intake_bags(){
 	#Infinite loop that only terminates when a valid quantity of bags is entered. Valid quantities are 0 through 3 inclusive
 	while [[ 1 -eq 1 ]]
 	do
-		
+		#User selects number of bags from provided list	
 		bags=`zenity --list --title="How many bags will you be bringing along?" --column="Number of bags" \
 			"0" \
 			"1" \
@@ -167,23 +167,63 @@ intake_bags(){
 			"3"`
 		
 		bags=`remove_carriage $bags`
-		echo $bags
 
-	
+		# Flags variable bags if user doesn't make a selection from the list
+		if [[ $bags == '' ]]
+		then
+			bags=-1	
+		fi
 		
-
-	#0	echo $bags | od -c
-	#	if [[ $bags -eq 0 ]] || [[ $bags -eq 1 ]] || [[ $bags -eq 2 ]] || [[ $bags -eq 3 ]]
-	#	then
-	#		return
-	#	else
-	#		zenity --warning --text="No more than 3 bags are allowed. Negative bag technology is also forbidden"		
-	#	
-	#	fi
+		#Checks the validity of the quantity of bags
+		if [[ $bags -eq 0 ]] || [[ $bags -eq 1 ]] || [[ $bags -eq 2 ]] || [[ $bags -eq 3 ]]
+		then
+			return
+		else
+			zenity --warning --text="No more than 3 bags are allowed. Negative bag technology is also forbidden"		
+		fi
 	done
 }
 
+intake_locations(){
 
+	while [[ 1 -eq 1 ]]
+	do
+		#Sets departing city
+		departure_city=`zenity --list --title="Where are you traveling from?" --column="City" \
+			"Portland" \
+			"Seattle" \
+			"Los Angeles" \
+			"St. Paul" \
+			"Miami" \
+			"Norfolk" \
+			"New york" `
+		departure_city=`remove_carriage "$departure_city"`
+
+		#Set destination city
+		destination_city=`zenity --list --title="Where are you headed?" --column="City" \
+			"Portland" \
+			"Seattle" \
+			"Los Angeles" \
+			"St. Paul" \
+			"Miami" \
+			"Norfolk" \
+			"New york" `
+		destination_city=`remove_carriage "$destination_city"`
+
+		# Makes sure valid input has been entered for the cities
+		if [[ $departure_city == '' || $destination_city == '' ]]
+		then
+			zenity --warning --text="Invalid selection - please try again"
+
+		#Checks that the user hasn't chosen the same city for both departing and arriving
+		elif [[ $departure_city == $destination_city ]]
+		then
+			zenity --warning --text="Departing and destination city cannot be the same. Try again"
+		else
+			return
+		fi	
+	done
+}
 
 #program begins
 #Initializes variables
@@ -195,8 +235,9 @@ return_date=''
 # Below is working
 #intake_passenger_name
 #intake_travel_dates
+#intake_bags
 
 #In progress
-
-intake_bags
-echo $bags
+intake_locations
+echo $departure_city	
+echo $destination_city
