@@ -1,5 +1,24 @@
 #!/bin/bash
 
+
+##########################################	
+#	Ryan Paulos			#
+#	CSE 224 - 12:00 - 1:50		#
+#	11/17/2017			#
+#	Programming Assignment 4	#
+#					#
+#					#
+#	Synopsis			#
+#########################################
+#This is a flight reservation program.  The program takes in traveler name, departure city, destination city, departure date, return date, and the number of travel bags. 
+# The program first requests the user enter a name, which is screened for an empty string. The user then enters the dates on which they wish to travel and these dates
+# are checked for validity: The departure date must be at least the day after the reservations are made. Because Our company runs a fleet of hypersonic passenger planes, 
+# customers can select departure return on the same dates. However, due to the weight limitations of hypersonic travel, passengers are only allowed 3 travel bags.
+# The user is then asked to select the departure and destination cities, screened to ensure they are not the same.
+# A summary of the given information is printed to the terminal, where the user can either move forward with the reservations are cancel the process.
+# lastly, the reservation is printed to the reservation.txt file. If the passenger had a previos reservation, that reservation is deactivated.
+
+
 # Removes the carriage return inserted by windows
 remove_carriage (){
 	echo `echo $1 | sed 's/\r//'` # Probably can remove outside echo and the backquotes
@@ -82,7 +101,7 @@ intake_passenger_name(){
 
 
 }	
-
+#Set the travel dates by manipulating the values entered by the user and verifying their validity. Dates must begin no earlier than one day after the present day and the return date can be no earlier than the departure date
 intake_travel_dates(){
 
 	while [[ 1 -eq 1 ]]
@@ -182,7 +201,7 @@ intake_bags(){
 		fi
 	done
 }
-
+#user selects departure city and destination city.  Repeats if user selects the same city for both variables
 intake_locations(){
 
 	while [[ 1 -eq 1 ]]
@@ -254,7 +273,7 @@ print_summary(){
 	done
 
 }
-
+# Writes the reservation to the reservation.txt file. If there is a reservation under the given name (case insensitive), then it is removed from the file before the new reservation is logged
 file_reservation(){
 
 	#Separates the variable values in file
@@ -264,18 +283,19 @@ file_reservation(){
 	super_var=$passenger_name$sep$departure_city$sep$destination_city$sep$departure_date$sep$return_date$sep$bags
 	
 	#Check if the passenger already has a reservation
-	presence=`grep ^"$passenger_name" reservations.txt`
+#	presence=`grep ^"$passenger_name" reservations.txt`
 	
 	#Appends reservation to file if there is no previous reservation
 	# Otherwise, deletes previous reservation and appends new one.
-	if [[ $presence == '' ]]
-	then
-		echo $super_var >> reservations.txt #Prints to file
-	else
-		sed -i "s/^$passenger_name.*//gI" reservations.txt  #Removes old reservation. Case insensitive
+#	if [[ $presence == '' ]]
+#	then
+#		echo $super_var >> reservations.txt #Prints to file
+#	else
+		sed -i "s/^$passenger_name|.*//gI" reservations.txt  #Removes old reservation. Case insensitive
+		sed -i "s/\r//g" reservations.txt #removes carriage returns
 		sed -i '/^\s*$/d' reservations.txt #Removes empty lines
 		echo $super_var >> reservations.txt
-	fi
+#	fi
 
 
 
@@ -289,13 +309,11 @@ departure_date=''
 return_date=''
 
 
-# Below is working
-intake_passenger_name
-intake_travel_dates
-intake_bags
-intake_locations
-print_summary
-#In progress
-file_reservation
+intake_passenger_name 	#Gathers passenger name from user
+intake_travel_dates	#Gathers departure and return dates
+intake_bags		#Prompts user to enter number of bags
+intake_locations	#Sets departure and destination cities
+print_summary		#Prints summary of collected info to terminal and prompts user to verify veracity.
+file_reservation	#Writes reservation to file
 
 
