@@ -5,16 +5,86 @@ remove_carriage (){
 	echo `echo $1 | sed 's/\r//'` # Probably can remove outside echo and the backquotes
 }
 
+# Removes the slashes and rearranges the dates to be in yymmdd format
+format_date (){
+	#formatted_date=`echo $1 | sed "s/\(.*\)\/\(.*\)\/\(.*\)/\1\2\3/g"`
+	#echo $formatted_date | od -c
+	echo $1 | sed "s/\(.*\)\/\(.*\)\/\(.*\)/\3\1\2/g"
+
+}
+
+# Evaluates the formatted departure and arrival dates for validity - arrival date cannot be before the departure date, and the departure date must be after the current date
+screen_dates (){
+
+	#sets variable today to current date in the same format as formatted departure and return dates
+	today=`date +%y%m%d`
+	echo "Departure date is $formatted_departure"
+	echo "Arrival date is $formatted_return"
+	echo "today is $today"
+
+	if [[ $formatted_departure -le $formatted_return && $formatted_departure -gt $today ]]
+	then
+		echo "valid travel dates"
+	else
+		echo "invalid travel dates"
+	fi	
+}
 
 
-passenger_name=`zenity --entry --title="Traveler Name" --text="What is the traveler's name?"`	#Prompts user to enter a name.  Can play with options
-passenger_name=`remove_carriage "$passenger_name"`
+#Prompts user to enter the name of the passenger. If the user enters a non-empty string they will be asked if they want to reenter a name or quit the session
+intake_passenger_name(){
+	passenger_name=''
+
+	while [[ $passenger_name == '' ]]
+	do
+
+		passenger_name=`zenity --entry --title="Traveler Name" --text="What is the traveler's name?"`	#Prompts user to enter a name.  Can play with options
+		passenger_name=`remove_carriage "$passenger_name"`	#Removes carriage return from the string
 
 
-echo $passenger_name | od -c
-if [[ $passenger_name == '' ]]
-then
-	echo "Empty string"
-else
-	echo $passenger_name
-fi
+		#checks if string is empty
+		if [[ $passenger_name == '' ]]
+
+		then
+			#Asks user if they mean to quit the session or retry entering valid name	
+			zenity --question --text="Invalid passenger name..try again or quit?" \
+				--ok-label="Try again" \
+				--cancel-label="Quit"
+			#interprets user input to previous question. Loop continues if "Try again", exits is "Quit"
+			if [[ $? -eq 0 ]]
+			then
+				echo "Ok, trying again"
+			else
+				echo "Ok, canceling.."
+				exit -1
+			fi
+		fi
+	done
+
+
+}	
+
+intake_travel_dates(){
+	
+	departure_date=`zenity --calendar --text="What is the departure date?"`
+	return_date=`zenity --calendar --text="What is the return date?"`
+
+	#Removes carriage return
+	departure_date=`remove_carriage $departure_date`
+	return_date=`remove_carriage $return_date`
+
+
+	#Formats dates for comparison
+	formatted_departure=`format_date $departure_date`
+	formatted_return=`format_date $return_date`
+
+
+
+
+
+}
+
+#Program begins
+intake_passenger_name
+
+
