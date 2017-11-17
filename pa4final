@@ -46,7 +46,6 @@ screen_dates (){
 #Prompts user to enter the name of the passenger. If the user enters a non-empty string they will be asked if they want to reenter a name or quit the session
 intake_passenger_name(){
 	
-	passenger_name=''
 
 	while [[ $passenger_name == '' ]]
 	do
@@ -133,14 +132,16 @@ dates_first_pass(){
 	done
 }
 #program begins
-
-#Initializes the date strings. 
+#Initializes variables
+passenger_name=''
 departure_date=''
 return_date=''
 
 
 # Below is working
 #intake_passenger_name
+#dates_first_pass
 
+#In progress
 #intake_travel_dates
 dates_first_pass
