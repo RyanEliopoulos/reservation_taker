@@ -96,17 +96,18 @@ intake_travel_dates(){
 
 		#Assigns the "return" values from screen_dates: 0 if the dates are valid, 1 if the arrival date is before departure, and -1 if the departure date is before today
 		screen_value=$(screen_dates)
-		echo $screen_value
+		
+		#If the dates are valid, returns to main execution
 		if [[ $screen_value -eq 0 ]]
 		then
 			return
 		fi
-
+		# Warns user of invalid dates and begins loop again
 		if [[ $screen_value -eq 1 ]]
 		then
 			zenity --warning --text="You can't come back before you leave! Try again."
 		fi
-	
+		#w Warns user of invalid dates and begins loop again	
 		if [[ $screen_value -eq -1 ]]
 		then
 			zenity --warning --text="Time traveling is strictly prohibited. Please try again."
@@ -151,6 +152,39 @@ dates_first_pass(){
 
 	done
 }
+
+#Prompts user to input the number of bags they will be bringing for their trip
+intake_bags(){
+
+	#Infinite loop that only terminates when a valid quantity of bags is entered. Valid quantities are 0 through 3 inclusive
+	while [[ 1 -eq 1 ]]
+	do
+		
+		bags=`zenity --list --title="How many bags will you be bringing along?" --column="Number of bags" \
+			"0" \
+			"1" \
+			"2" \
+			"3"`
+		
+		bags=`remove_carriage $bags`
+		echo $bags
+
+	
+		
+
+	#0	echo $bags | od -c
+	#	if [[ $bags -eq 0 ]] || [[ $bags -eq 1 ]] || [[ $bags -eq 2 ]] || [[ $bags -eq 3 ]]
+	#	then
+	#		return
+	#	else
+	#		zenity --warning --text="No more than 3 bags are allowed. Negative bag technology is also forbidden"		
+	#	
+	#	fi
+	done
+}
+
+
+
 #program begins
 #Initializes variables
 passenger_name=''
@@ -160,7 +194,9 @@ return_date=''
 
 # Below is working
 #intake_passenger_name
-#dates_first_pass
+#intake_travel_dates
 
 #In progress
-intake_travel_dates
+
+intake_bags
+echo $bags
