@@ -1,5 +1,12 @@
 #!/bin/bash
 
+#To do: make sure that the value of bags is an integer and that the bag quantity does not exceed some value
+# Make sure the the arrival and departure cities are not the same
+# Develop function for getting all of the information ready to print
+# fnx for detecting if a name already has a reservation
+# fnx to remove above reservation, if it exists
+
+
 
 # Removes the carriage return inserted by windows
 remove_carriage (){
@@ -31,12 +38,13 @@ screen_dates (){
 passenger_name=`zenity --entry --title="Traveler Name" --text="What is the traveler's name?"`	#Prompts user to enter a name.  Can play with options
 departure_date=`zenity --calendar --text="What is the departure date?"`
 return_date=`zenity --calendar --text="What is the return date?"`
-
+bag_quant=`zenity --entry --title="Bags" --text="How many bags will you be bringing with you?"` 
 
 #Removes carriage returns
-passenger_name=`remove_carriage $passenger_name`
+passenger_name=`remove_carriage "$passenger_name"`
 departure_date=`remove_carriage $departure_date`
 return_date=`remove_carriage $return_date`
+bag_quant=`remove_carriage $bag_quant`
 
 #Formats dates for comparison
 formatted_departure=`format_date $departure_date`
@@ -53,8 +61,34 @@ departure_city=`zenity --list --title="Select your departure city" --column="Cit
 	"New york" `
 departure_city=`remove_carriage "$departure_city"`
 
+destination_city=`zenity --list --title="Select your departure city" --column="City" \
+	"Portland" \
+	"Seattle" \
+	"Los Angeles" \
+	"St. Paul" \
+	"Miami" \
+	"Norfolk" \
+	"New york" `
+destination_city=`remove_carriage "destination_city"`
 
-echo $departure_city | cat >> test_file.txt
+
+presence=`grep ^"$passenger_name" test_file.txt`
+
+if [[ $presence != '' ]]
+then
+	echo "The passenger already has booked a flight"
+else
+	echo "The passenger has not yet booked a flight"
+
+	# This will allow for writing the information into the "reservations.txt" in the required format
+	sep="|"
+	super_var=$passenger_name$sep$departure_city$sep$destination_city$sep$departure_date$sep$return_date$sep$bag_quant
+	echo $super_var
+	echo $super_var >> test_file.txt
+fi	
+
+
+
 
 
 # use sed -n "/^$variable/p" to find out of an entry exists for that person. If so, use grep -v $variable > to write new file without that entry, then echo $variable >> reservations.txt to append the new scheduled trip.
@@ -65,13 +99,13 @@ echo $departure_city | cat >> test_file.txt
 # To append, use echo $reservation_info >> reservation.txt
 
 
-
-#presence=`grep ^$test bullshit.txt`
+#test_name="df"
+#presence=`grep ^$test_name test_file.txt`
 #echo $presence
 
 #if [[ $presence != '' ]]
 #then
-#	echo grep -v ^$test bullshit.txt
+	#echo grep -v ^$test bullshit.txt
 #else
 #	echo "cheese balls"
 #fi	
